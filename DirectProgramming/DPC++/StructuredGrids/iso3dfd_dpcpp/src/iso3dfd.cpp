@@ -1,10 +1,10 @@
 //==============================================================
-// Copyright © 2020 Intel Corporation
+// Copyright Â© 2020 Intel Corporation
 //
 // SPDX-License-Identifier: MIT
 // =============================================================
 
-// ISO3DFD: Intel® oneAPI DPC++ Language Basics Using 3D-Finite-Difference-Wave
+// ISO3DFD: Data Parallel C++ Language Basics Using 3D-Finite-Difference-Wave
 // Propagation
 //
 // ISO3DFD is a finite difference stencil kernel for solving the 3D acoustic
@@ -32,6 +32,7 @@
 //
 #include "iso3dfd.h"
 #include <iostream>
+#include <string>
 #include "device_selector.hpp"
 #include "dpc_common.hpp"
 
@@ -188,7 +189,7 @@ int main(int argc, char* argv[]) {
   // Read optional arguments to select version and device
   for (auto arg = 8; arg < argc; arg++) {
     std::string arg_value = argv[arg];
-    transform(arg_value.begin(), arg_value.end(), arg_value.begin(), ::tolower);
+    std::transform(arg_value.begin(), arg_value.end(), arg_value.begin(), ::tolower);
 
     if (arg_value == "omp") {
       omp = true;

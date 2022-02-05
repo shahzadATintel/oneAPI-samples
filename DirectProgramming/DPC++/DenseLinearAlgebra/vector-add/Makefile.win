@@ -1,5 +1,5 @@
 CXX = dpcpp-cl
-CXXFLAGS = -O2 -EHsc -Zi
+CXXFLAGS = /O2 /EHsc /Zi
 LDFLAGS = 
 EXE_NAME = vector-add-buffers.exe
 SOURCES = src/vector-add-buffers.cpp

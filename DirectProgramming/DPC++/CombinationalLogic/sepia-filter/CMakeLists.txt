@@ -1,8 +1,4 @@
-if(WIN32)
-        set(CMAKE_CXX_COMPILER "dpcpp-cl")
-else()
-        set(CMAKE_CXX_COMPILER "dpcpp")
-endif()
+set(CMAKE_CXX_COMPILER "dpcpp")
 # Set default build type to RelWithDebInfo if not specified
 if (NOT CMAKE_BUILD_TYPE)
     message (STATUS "Default CMAKE_BUILD_TYPE not set using Release with Debug Info")
@@ -10,6 +6,6 @@ if (NOT CMAKE_BUILD_TYPE)
         STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel"
         FORCE)
 endif()
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.4)
 project (SepiaFilter)
 add_subdirectory (src)

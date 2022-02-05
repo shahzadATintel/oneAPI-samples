@@ -1,15 +1,3 @@
-//==============================================================
-//
-// SAMPLE SOURCE CODE - SUBJECT TO THE TERMS OF SAMPLE CODE LICENSE AGREEMENT,
-// http://software.intel.com/en-us/articles/intel-sample-source-code-license-agreement/
-//
-// Copyright 2016 Intel Corporation
-//
-// THIS FILE IS PROVIDED "AS IS" WITH NO WARRANTIES, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS
-// FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT OF INTELLECTUAL PROPERTY RIGHTS.
-//
-// =============================================================
 /* [DESCRIPTION]
  * This C code sample demonstrates how to use C, Intel(R) MMX(TM),
  * Intel(R) Streaming SIMD Extensions 3 (Intel(R) SSE3),
@@ -30,13 +18,17 @@
  *
  */
 #include <immintrin.h>
+#include <omp.h>
 #include <pmmintrin.h>
 #include <stdio.h>
+
 #define SIZE 24  // assumes size is a multiple of 8 because
 // Intel(R) AVX registers will store 8, 32bit elements.
 
 // Computes dot product using C
 float dot_product(float *a, float *b);
+// Computes dot product using SIMD
+float dot_product_SIMD(float *a, float *b);
 // Computes dot product using Intel(R) SSE intrinsics
 float dot_product_intrin(float *a, float *b);
 // Computes dot product using Intel(R) AVX intrinsics
@@ -59,8 +51,12 @@ int main() {
     a[i] = i;
     b[i] = i;
   }
+
   product = dot_product(x, y);
   printf("Dot Product computed by C:  %f\n", product);
+
+  product = dot_product_SIMD(x, y);
+  printf("Dot Product computed by C + SIMD:  %f\n", product);
 
   product = dot_product_intrin(x, y);
   printf("Dot Product computed by Intel(R) SSE3 intrinsics:  %f\n", product);
@@ -72,12 +68,12 @@ int main() {
     product = AVX2_dot_product(x, y);
     printf("Dot Product computed by Intel(R) AVX2 intrinsics:  %f\n", product);
   } else
-    printf("Your Processor does not support AVX2 instrinsics.\n");
+    printf("Your Processor does not support Intel(R) AVX2 instrinsics.\n");
   if (_may_i_use_cpu_feature(_FEATURE_AVX)) {
     product = AVX_dot_product(x, y);
     printf("Dot Product computed by Intel(R) AVX intrinsics:  %f\n", product);
   } else
-    printf("Your Processor does not support AVX intrinsics.\n");
+    printf("Your Processor does not support Intel(R) AVX intrinsics.\n");
 #else
   printf("Use Intel(R) Compiler to compute with Intel(R) AVX intrinsics\n");
 #endif
@@ -100,6 +96,16 @@ int main() {
 float dot_product(float *a, float *b) {
   int i;
   int sum = 0;
+  for (i = 0; i < SIZE; i++) {
+    sum += a[i] * b[i];
+  }
+  return sum;
+}
+
+float dot_product_SIMD(float *a, float *b) {
+  int i;
+  int sum = 0;
+#pragma omp simd reduction(+ : sum)
   for (i = 0; i < SIZE; i++) {
     sum += a[i] * b[i];
   }
@@ -193,7 +199,7 @@ float dot_product_intrin(float *a, float *b) {
         b +
         i);  // loads unaligned array b into num2  num2= b[3]   b[2]   b[1] b[0]
     num3 = _mm_mul_ps(num1, num2);  // performs multiplication   num3 =
-                                    // a[3]*b[3]  a[2]*b[2]  a[1]*b[1]  a[0]*b[0]
+                                    // a[3]*b[3]  a[2]*b[2]  a[1]*b[1] a[0]*b[0]
     num3 = _mm_hadd_ps(num3, num3);  // performs horizontal addition
     // num3=  a[3]*b[3]+ a[2]*b[2]  a[1]*b[1]+a[0]*b[0]  a[3]*b[3]+ a[2]*b[2]
     // a[1]*b[1]+a[0]*b[0]
